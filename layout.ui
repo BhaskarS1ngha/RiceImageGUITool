@@ -236,6 +236,7 @@
     </property>
     <addaction name="actionCycle_colour_map"/>
     <addaction name="actionContours"/>
+    <addaction name="actionPyradiomics_features"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -259,6 +260,9 @@
    <property name="statusTip">
     <string>Change colour map</string>
    </property>
+   <property name="shortcut">
+    <string>C</string>
+   </property>
   </action>
   <action name="actionContours">
    <property name="text">
@@ -266,6 +270,17 @@
    </property>
    <property name="statusTip">
     <string>Enable/Disable contours</string>
+   </property>
+   <property name="shortcut">
+    <string>V</string>
+   </property>
+  </action>
+  <action name="actionPyradiomics_features">
+   <property name="text">
+    <string>Pyradiomics features</string>
+   </property>
+   <property name="statusTip">
+    <string>Calculate and display features using pyradiomics</string>
    </property>
   </action>
  </widget>
