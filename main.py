@@ -25,6 +25,9 @@ class MainWindow:
         self.mask = None
         self.contours = None
         self.showContours = False
+        self.stats_keys = ['mean_intenisty', 'std_intensity', 'entropy', 'variance']
+        self.stat_desc = {'mean_intenisty': 'Mean ', 'std_intensity': 'Std Dev ',
+                          'entropy': 'Entropy', 'variance': 'Variance'}
 
         #connect sliders to updateVals function
         self.ui.slider_h_min.valueChanged.connect(self.updateVals)
@@ -42,8 +45,9 @@ class MainWindow:
         self.ui.actionCycle_colour_map.triggered.connect(self.updateMode)
         self.ui.actionContours.triggered.connect(self.toggleContours)
 
-
-        self.ui.label_stats.setText("hello\n World")
+        # text = ""
+        # for key in self.stats_keys:
+        #     text += f"{self.stat_desc[key]}: Wait\n"
 
 
     def show(self):
@@ -66,6 +70,7 @@ class MainWindow:
         #print values to console
         print(f'h_min: {self.h_min}; h_max: {self.h_max}; v_min: {self.v_min}; v_max: {self.v_max}')
         self.updateImage()
+        self.updateStats()
 
     def convertImg(self,img):
         #converts the image to a format that can be displayed by Qt
@@ -123,6 +128,27 @@ class MainWindow:
         self.ui.label_original_img.setPixmap(QPixmap(img).scaled(ImgLabelWidth, ImgLabelHeight))
         self.ui.label_original_img.setPixmap(QPixmap(self.convertImg(self.origImage)).scaled(ImgLabelWidth, ImgLabelHeight))
 
+    def updateStats(self):
+        keys = self.stats_keys
+        text = ""
+        for key in keys:
+            text += f"{self.stat_desc[key]}: Wait\n"
+        self.ui.label_stats.setText(text)
+
+        stats = self.segmenter.getStats()
+        ent = stats['entropy']
+        if ent is not None:
+            ent = np.mean(ent)
+        stats['entropy'] = ent
+        # if stats is None:
+        #     text = ""
+        #     for key in keys:
+        #         text += f"{self.stat_desc[key]}: NaN\n"
+        #     self.ui.label_stats.setText(text)
+        text=""
+        for key in keys:
+            text += f"{self.stat_desc[key]}: {stats[key]}\n"
+        self.ui.label_stats.setText(text)
 
 
 if __name__ == '__main__':

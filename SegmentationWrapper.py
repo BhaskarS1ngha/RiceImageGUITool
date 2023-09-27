@@ -2,6 +2,7 @@ import cv2 as cv
 import numpy as np
 from brownspot_seg import segment, hsvSegOptimised
 from kmeans_segmentation import segment_rough
+from scipy.stats import entropy
 import os
 
 
@@ -71,12 +72,44 @@ class ImageSegmenter:
         mask[mask!=0] = self.label
         self.mask = mask
 
+    def getStats(self):
+        '''
+        This method returns a dictionary containing the stats of the generated mask.
+        '''
+        if self.mask is None:
+            self.segment()
+        stats = {}
+        pxidx = np.where(self.mask != 0)
+        pxidx = list(zip(pxidx[0], pxidx[1]))
+        vals = list()
+        for x in pxidx:
+            vals.append(self.roughSegImg[x])
+        # if len(vals) == 0:
+        #     return None
+        # dist = list()
+        # for i in range(len(vals)):
+        #     for j in range(i+1, len(vals)):
+        #         dist.append(np.linalg.norm(vals[i]-vals[j]))
+        # stats['mean'] = np.mean(dist)
+        # stats['std'] = np.std(dist)
+        stats['mean_intenisty'] = np.mean(vals)
+        stats['std_intensity'] = np.std(vals)
+        ent_vals = entropy(vals)
+        stats['entropy'] = entropy(vals)
+        stats['variance'] = np.var(vals)
+        # if len(stats['entropy'])>1:
+        #     stats['entropy'] = np.mean(stats['entropy'])
+        return stats
+
+
 
 if __name__ == '__main__':
     imgSrc = r"Sample Data/IMG_2977.jpg"
     thresholds = {'H': (0, 22), 'V': (0, 149)}
     segmenter = ImageSegmenter(imgSrc, thresholds)
     segmenter.segment()
+    st = segmenter.getStats()
+    print(st)
     mask = segmenter.mask
     print(mask.shape)
     mask[mask!=0] = 255
