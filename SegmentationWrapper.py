@@ -26,9 +26,12 @@ class ImageSegmenter:
 
         self.h_absolutes = (0, 180)
         self.v_absolutes = (0, 255)
+        self.srcImage = cv.imread(self.imgSrc)
+        self.roughSegImg, self.roughMask = segment_rough(self.imgSrc)
         self.mask = None
         self.contours = None
         self.run_checks()
+
 
     def update_thresholds(self, thresholds:dict):
         '''
@@ -61,8 +64,8 @@ class ImageSegmenter:
         '''
         This method generates a mask for the image at imgSrc and stores it in the mask attribute.
         '''
-        roughSegImg, roughMask = segment_rough(self.imgSrc)
-        mask = hsvSegOptimised(roughSegImg, roughMask, (self.h_min, self.h_max), (self.v_min, self.v_max))
+
+        mask = hsvSegOptimised(self.roughSegImg, self.roughMask, (self.h_min, self.h_max), (self.v_min, self.v_max))
         mask[mask!=0] = 255
         self.contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         mask[mask!=0] = self.label
@@ -75,6 +78,7 @@ if __name__ == '__main__':
     segmenter = ImageSegmenter(imgSrc, thresholds)
     segmenter.segment()
     mask = segmenter.mask
+    print(mask.shape)
     mask[mask!=0] = 255
     cv.imshow('mask', cv.resize(mask, (800, 800)))
     cv.waitKey(0)
