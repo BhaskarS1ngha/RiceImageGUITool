@@ -11,7 +11,7 @@ from SegmentationWrapper import ImageSegmenter as IS
 class MainWindow:
     def __init__(self):
         thresholds = {'H': (0, 22), 'V': (0, 149)}
-        self.imgPath = r'Sample Data/IMG_2977.jpg'
+        self.imgPath = r'Sample Data/img 1.jpg'
         self.segmenter = IS(self.imgPath, thresholds)
         self.main_window = QMainWindow()
         self.ui = Ui_MainWindow()
